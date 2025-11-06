@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Ittihadul Exam</title>
+  <link rel="icon" href="https://i.imgur.com/3HOXdjB.png" />
+  <style>
+    :root {
+      --green-dark: #2f704d;
+      --green-main: #3b8358;
+      --green-light: #e8f3ea;
+      --gray-text: #333;
+    }
+
+    body {
+      background: var(--green-light);
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: white;
+      padding: 32px 28px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      color: var(--green-main);
+      margin-bottom: 4px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    p {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d5e3da;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--green-main);
+      background: #f4fff7;
+    }
+
+    button {
+      width: 100%;
+      background: var(--green-main);
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--green-dark);
+    }
+
+    .small {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .small a {
+      color: var(--green-main);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .small a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img src="https://i.imgur.com/3HOXdjB.png" class="logo" />
+    <h2>Ittihadul Exam</h2>
+    <p>Admin Login Panel</p>
+
+    <input type="email" id="email" placeholder="Admin Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+
+    <div class="small">
+      Deploy-ready for GitHub Pages • Firebase Auth
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
+      authDomain: "exam-app-f9bce.firebaseapp.com",
+      projectId: "exam-app-f9bce",
+      storageBucket: "exam-app-f9bce.firebasestorage.app",
+      messagingSenderId: "818751284037",
+      appId: "1:818751284037:web:4e519c3e7dd16196b0142c"
+    };
+
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const auth = firebase.auth();
+
+    // Auto-redirect if already logged in
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        window.location.href = "admin.html";
+      }
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Please fill both fields.");
+        return;
+      }
+
+      try {
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        await auth.signInWithEmailAndPassword(email, password);
+        alert("✅ Login successful!");
+        window.location.href = "admin.html";
+      } catch (error) {
+        alert("❌ Login failed: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
