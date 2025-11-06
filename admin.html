@@ -262,31 +262,37 @@
     document.getElementById("logout").addEventListener("click", () => auth.signOut());
 
     document.getElementById("createTest").addEventListener("click", async () => {
-      const kodeTes = kodeTes.value.trim();
-      const title = title.value.trim();
-      const pdfUrl = pdfUrl.value.trim();
-      const keyUrl = keyUrl.value.trim();
-      const duration = parseInt(duration.value.trim());
-      const numQuestions = parseInt(numQuestions.value.trim());
+  const kodeTes = document.getElementById("kodeTes").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const pdfUrl = document.getElementById("pdfUrl").value.trim();
+  const keyUrl = document.getElementById("keyUrl").value.trim();
+  const duration = parseInt(document.getElementById("duration").value.trim());
+  const numQuestions = parseInt(document.getElementById("numQuestions").value.trim());
 
-      if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
-        alert("⚠️ Please fill all fields!");
-        return;
-      }
+  if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
+    alert("Please fill all fields!");
+    return;
+  }
 
-      try {
-        await db.collection("tests").add({
-          kodeTes, title, pdfUrl, keyUrl, duration, numQuestions,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          status: "active"
-        });
-        alert("✅ Test created successfully!");
-        document.querySelectorAll("input").forEach(i => i.value = "");
-        loadTests();
-      } catch (err) {
-        alert("❌ Failed to create test: " + err.message);
-      }
+  try {
+    await db.collection("tests").add({
+      kodeTes,
+      title,
+      pdfUrl,
+      keyUrl,
+      duration,
+      numQuestions,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: "active"
     });
+    alert("✅ Test created successfully!");
+    document.querySelectorAll("input").forEach(i => (i.value = ""));
+    loadTests();
+  } catch (err) {
+    alert("❌ Failed to create test: " + err.message);
+  }
+});
+
 
     async function loadTests() {
       const list = document.getElementById("testsList");
