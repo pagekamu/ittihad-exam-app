@@ -19,11 +19,21 @@
         </div>
       </header>
 
-      <div class="content">
-        <!-- Create Test -->
-        <div class="card">
-          <h3 style="margin:0">Create Test</h3>
-          <div class="small" style="margin-top:10px">Fill required fields below.</div>
+<div class="card">
+  <h3>Create Test</h3>
+  <div class="small">Fill required fields below.</div>
+  <input id="kodeTes" placeholder="Test Code (e.g., ENG101)" />
+  <input id="title" placeholder="Title (e.g., English Practice 1)" />
+  <input id="pdfUrl" placeholder="Google Drive PDF link (view)" />
+  <input id="keyUrl" placeholder="Google Drive CSV link (download)" />
+  <input id="duration" type="number" placeholder="Duration (minutes)" />
+  <input id="numQuestions" type="number" placeholder="Number of Questions" />
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button id="createTest" class="btn">Create</button>
+    <button id="logout" class="btn secondary">Logout</button>
+  </div>
+</div>
+
 
           <div style="margin-top:12px">
             <input id="code" placeholder="Test code"
