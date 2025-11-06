@@ -103,35 +103,38 @@
       }
     }
 
-    document.getElementById('btnCreate').addEventListener('click', async () => {
-      const u = await ensureAdmin();
-      if (!u) return;
+    document.getElementById("createTest").addEventListener("click", async () => {
+  const kodeTes = document.getElementById("kodeTes").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const pdfUrl = document.getElementById("pdfUrl").value.trim();
+  const keyUrl = document.getElementById("keyUrl").value.trim();
+  const duration = parseInt(document.getElementById("duration").value.trim());
+  const numQuestions = parseInt(document.getElementById("numQuestions").value.trim());
 
-      const code = document.getElementById('code').value.trim();
-      const title = document.getElementById('title').value.trim();
-      const pdfUrl = document.getElementById('pdfUrl').value.trim();
-      const keyUrl = document.getElementById('keyUrl').value.trim();
+  if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
+    alert("Please fill all fields!");
+    return;
+  }
 
-      if (!code || !title || !pdfUrl || !keyUrl) {
-        alert('Fill required fields');
-        return;
-      }
-
-      const id = 'test_' + Date.now();
-      await db.collection('tests').doc(id).set({
-        kodeTes: code,
-        title,
-        pdfUrl,
-        keyUrl,
-        duration: 120,
-        numQuestions: 50,
-        status: 'active',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      alert('Created successfully!');
-      loadTests();
+  try {
+    await db.collection("tests").add({
+      kodeTes,
+      title,
+      pdfUrl,
+      keyUrl,
+      duration,
+      numQuestions,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: "active"
     });
+    alert("✅ Test created successfully!");
+    document.querySelectorAll("input").forEach(i => (i.value = ""));
+    loadTests();
+  } catch (err) {
+    alert("❌ Failed to create test: " + err.message);
+  }
+});
+
 
     document.getElementById('btnLogout').addEventListener('click', () => auth.signOut());
 
