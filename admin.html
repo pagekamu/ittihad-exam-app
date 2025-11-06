@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Ittihadul Exam</title>
+  <link rel="icon" href="https://i.imgur.com/3HOXdjB.png" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="app-device">
+      <header class="header">
+        <img src="https://i.imgur.com/3HOXdjB.png" class="logo" />
+        <div class="title">
+          SMPIT–SMAIT Ittihadul Muwahidin<br>
+          <span style="font-weight:400;font-size:12px">Admin Panel</span>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Create Test -->
+        <div class="card">
+          <h3 style="margin:0">Create Test</h3>
+          <div class="small" style="margin-top:10px">Fill required fields below.</div>
+
+          <div style="margin-top:12px">
+            <input id="code" placeholder="Test code"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8f2ee" />
+          </div>
+
+          <div style="margin-top:8px">
+            <input id="title" placeholder="Title"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8f2ee" />
+          </div>
+
+          <div style="margin-top:8px">
+            <input id="pdfUrl" placeholder="PDF viewer link (drive uc?export=view)"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8f2ee" />
+          </div>
+
+          <div style="margin-top:8px">
+            <input id="keyUrl" placeholder="Answer CSV download link"
+              style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8f2ee" />
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button id="btnCreate" class="btn">Create</button>
+            <button id="btnLogout" class="btn secondary">Logout</button>
+          </div>
+        </div>
+
+        <!-- Active Tests -->
+        <div style="margin-top:12px" class="card">
+          <h4 style="margin:0">Active Tests</h4>
+          <div id="testsList" style="margin-top:10px" class="small">Loading…</div>
+        </div>
+
+        <div class="footer">
+          Deploy-ready for GitHub Pages. Uses Firebase Auth & Firestore.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+
+  <script>
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    async function ensureAdmin() {
+      const user = auth.currentUser;
+      if (user) return user;
+
+      const email = prompt('Admin email:');
+      if (!email) return null;
+      const pass = prompt('Password:');
+      if (!pass) return null;
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        return auth.currentUser;
+      } catch (e) {
+        alert('Sign in failed: ' + e.message);
+        return null;
+      }
+    }
+
+    document.getElementById('btnCreate').addEventListener('click', async () => {
+      const u = await ensureAdmin();
+      if (!u) return;
+
+      const code = document.getElementById('code').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const pdfUrl = document.getElementById('pdfUrl').value.trim();
+      const keyUrl = document.getElementById('keyUrl').value.trim();
+
+      if (!code || !title || !pdfUrl || !keyUrl) {
+        alert('Fill required fields');
+        return;
+      }
+
+      const id = 'test_' + Date.now();
+      await db.collection('tests').doc(id).set({
+        kodeTes: code,
+        title,
+        pdfUrl,
+        keyUrl,
+        duration: 120,
+        numQuestions: 50,
+        status: 'active',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('Created successfully!');
+      loadTests();
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', () => auth.signOut());
+
+    async function loadTests() {
+      const list = document.getElementById('testsList');
+      list.innerHTML = '';
+      try {
+        const snap = await db.collection('tests')
+          .where('status', '==', 'active')
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        if (snap.empty) {
+          list.innerHTML = '<div class="small">No tests.</div>';
+          return;
+        }
+
+        snap.forEach(doc => {
+          const d = doc.data();
+          const el = document.createElement('div');
+          el.className = 'test-card';
+          el.innerHTML = `
+            <div>
+              <strong>${d.title}</strong>
+              <div class="test-meta">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="window.open('student.html?test=${doc.id}','_blank')">Open</button>
+              <button class="btn secondary" onclick="viewResults('${doc.id}')">Results</button>
+            </div>`;
+          list.appendChild(el);
+        });
+      } catch (e) {
+        list.innerHTML = '<div class="small">Unable to load tests.</div>';
+      }
+    }
+
+    window.viewResults = async function (testId) {
+      const admin = await ensureAdmin();
+      if (!admin) return;
+
+      const snap = await db.collection('results')
+        .where('testId', '==', testId)
+        .orderBy('submittedAt', 'desc')
+        .get();
+
+      const rows = [];
+      snap.forEach(d => rows.push(Object.assign({ id: d.id }, d.data())));
+
+      const modal = document.createElement('div');
+      modal.className = 'card';
+      modal.style.position = 'fixed';
+      modal.style.left = '10px';
+      modal.style.right = '10px';
+      modal.style.top = '80px';
+      modal.style.maxHeight = '60vh';
+      modal.style.overflow = 'auto';
+      modal.innerHTML = `
+        <h4>Results</h4>
+        <div>
+          ${rows.map(r => `<div style="padding:6px;border-bottom:1px solid #eef6ee">
+            ${r.userId} — ${r.score || 0}%
+          </div>`).join('')}
+        </div>
+        <div style="text-align:right;margin-top:8px">
+          <button onclick="document.body.removeChild(this.closest('.card'))" class="btn secondary">Close</button>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+
+    loadTests();
+  </script>
+</body>
+</html>
