@@ -9,43 +9,41 @@
   <style>
     :root {
       --green-dark: #2f704d;
-      --green-main: #3d8658;
-      --green-light: #eaf5ed;
-      --white: #ffffff;
-      --gray-text: #444;
+      --green-main: #3b8358;
+      --green-light: #e8f3ea;
+      --gray-text: #333;
+      --gray-muted: #666;
     }
 
     body {
+      margin: 0;
       background: var(--green-light);
       font-family: 'Inter', system-ui, sans-serif;
       color: var(--gray-text);
-      margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
     }
 
-    .app-device {
+    .wrapper {
       width: 100%;
       max-width: 420px;
-      margin-top: 40px;
+      margin: 32px 12px;
     }
 
-    /* HEADER */
     .header {
       background: var(--green-main);
-      color: var(--white);
-      border-radius: 16px 16px 0 0;
+      color: white;
+      border-radius: 14px 14px 0 0;
       text-align: center;
-      padding: 20px 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 18px 16px 22px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 
     .header img {
-      width: 72px;
-      height: 72px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       margin-bottom: 8px;
     }
@@ -53,28 +51,40 @@
     .header .title {
       font-size: 17px;
       font-weight: 600;
+      line-height: 1.4;
     }
 
-    .header span {
-      font-weight: 400;
+    .header .subtitle {
       font-size: 13px;
+      font-weight: 400;
       opacity: .9;
     }
 
-    /* FORM CARD */
     .card {
-      background: var(--white);
-      border-radius: 0 0 16px 16px;
+      background: white;
+      border-radius: 0 0 14px 14px;
+      padding: 20px 18px 24px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-      padding: 20px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .card .small {
+      font-size: 13px;
+      color: var(--gray-muted);
+      margin-bottom: 14px;
     }
 
     label {
       display: block;
-      font-size: 14px;
+      font-size: 13px;
+      color: #444;
       font-weight: 500;
-      margin-top: 10px;
       margin-bottom: 4px;
     }
 
@@ -82,15 +92,17 @@
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1px solid #cfded1;
+      border: 1px solid #d4e2d7;
       font-size: 14px;
-      background: #f9fdfb;
-      transition: border 0.2s, background 0.2s;
+      background: #fafdfb;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+      box-sizing: border-box;
     }
 
     input:focus {
       border-color: var(--green-main);
-      background: #f3fff5;
+      background: #f4fff6;
       outline: none;
     }
 
@@ -98,12 +110,13 @@
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 14px;
+      margin-top: 12px;
+      flex-wrap: wrap;
     }
 
     .btn {
       background: var(--green-main);
-      color: var(--white);
+      color: white;
       border: none;
       padding: 10px 18px;
       border-radius: 8px;
@@ -122,17 +135,11 @@
       border: 1px solid #d8e2db;
     }
 
-    .section-title {
-      font-weight: 600;
-      font-size: 16px;
-      margin-bottom: 6px;
-    }
-
     .footer {
       text-align: center;
       font-size: 12px;
-      color: #5a5a5a;
-      margin-top: 20px;
+      color: #555;
+      margin-top: 18px;
     }
 
     .test-card {
@@ -141,6 +148,11 @@
       align-items: center;
       border-bottom: 1px solid #eef3ef;
       padding: 8px 0;
+      flex-wrap: wrap;
+    }
+
+    .test-card strong {
+      font-size: 14px;
     }
 
     .test-meta {
@@ -148,43 +160,54 @@
       color: #5c6f63;
     }
 
-    .small {
-      font-size: 13px;
-      color: #666;
+    /* RESPONSIVE FIX */
+    @media (max-width: 430px) {
+      .wrapper {
+        margin: 16px 8px;
+      }
+      .card {
+        padding: 16px;
+      }
+      .header {
+        border-radius: 10px 10px 0 0;
+        padding: 16px;
+      }
+      .header img {
+        width: 60px;
+        height: 60px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="app-device">
-    <!-- HEADER -->
+  <div class="wrapper">
     <header class="header">
       <img src="https://i.imgur.com/3HOXdjB.png" alt="Logo">
       <div class="title">SMPIT–SMAIT Ittihadul Muwahidin</div>
-      <span>Admin Panel</span>
+      <div class="subtitle">Admin Panel</div>
     </header>
 
-    <!-- FORM -->
     <div class="card">
-      <div class="section-title">Create New Test</div>
+      <h3>Create New Test</h3>
       <div class="small">Fill all fields below carefully.</div>
 
-      <label for="kodeTes">Test Code</label>
+      <label>Test Code</label>
       <input id="kodeTes" placeholder="e.g., ENG101" />
 
-      <label for="title">Title</label>
+      <label>Title</label>
       <input id="title" placeholder="e.g., English Practice 1" />
 
-      <label for="pdfUrl">Google Drive PDF (view link)</label>
+      <label>Google Drive PDF (view link)</label>
       <input id="pdfUrl" placeholder="https://drive.google.com/uc?export=view&id=..." />
 
-      <label for="keyUrl">Answer Key CSV (download link)</label>
+      <label>Answer Key CSV (download link)</label>
       <input id="keyUrl" placeholder="https://drive.google.com/uc?export=download&id=..." />
 
-      <label for="duration">Duration (minutes)</label>
+      <label>Duration (minutes)</label>
       <input id="duration" type="number" placeholder="e.g., 90" />
 
-      <label for="numQuestions">Number of Questions</label>
+      <label>Number of Questions</label>
       <input id="numQuestions" type="number" placeholder="e.g., 50" />
 
       <div class="btn-group">
@@ -193,9 +216,8 @@
       </div>
     </div>
 
-    <!-- ACTIVE TESTS -->
     <div class="card">
-      <div class="section-title">Active Tests</div>
+      <h3>Active Tests</h3>
       <div id="testsList" class="small">Loading…</div>
     </div>
 
@@ -204,10 +226,10 @@
     </div>
   </div>
 
-  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <script>
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
@@ -237,17 +259,15 @@
       }
     }
 
-    // Logout
     document.getElementById("logout").addEventListener("click", () => auth.signOut());
 
-    // Create new test
     document.getElementById("createTest").addEventListener("click", async () => {
-      const kodeTes = document.getElementById("kodeTes").value.trim();
-      const title = document.getElementById("title").value.trim();
-      const pdfUrl = document.getElementById("pdfUrl").value.trim();
-      const keyUrl = document.getElementById("keyUrl").value.trim();
-      const duration = parseInt(document.getElementById("duration").value.trim());
-      const numQuestions = parseInt(document.getElementById("numQuestions").value.trim());
+      const kodeTes = kodeTes.value.trim();
+      const title = title.value.trim();
+      const pdfUrl = pdfUrl.value.trim();
+      const keyUrl = keyUrl.value.trim();
+      const duration = parseInt(duration.value.trim());
+      const numQuestions = parseInt(numQuestions.value.trim());
 
       if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
         alert("⚠️ Please fill all fields!");
@@ -256,12 +276,7 @@
 
       try {
         await db.collection("tests").add({
-          kodeTes,
-          title,
-          pdfUrl,
-          keyUrl,
-          duration,
-          numQuestions,
+          kodeTes, title, pdfUrl, keyUrl, duration, numQuestions,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           status: "active"
         });
@@ -302,7 +317,7 @@
             </div>`;
           list.appendChild(el);
         });
-      } catch (e) {
+      } catch {
         list.innerHTML = "<div class='small'>Unable to load tests.</div>";
       }
     }
