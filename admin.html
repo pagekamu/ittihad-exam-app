@@ -160,7 +160,6 @@
       color: #5c6f63;
     }
 
-    /* RESPONSIVE FIX */
     @media (max-width: 430px) {
       .wrapper {
         margin: 16px 8px;
@@ -231,111 +230,96 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script>
-    const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
-      authDomain: "exam-app-f9bce.firebaseapp.com",
-      projectId: "exam-app-f9bce",
-      storageBucket: "exam-app-f9bce.firebasestorage.app",
-      messagingSenderId: "818751284037",
-      appId: "1:818751284037:web:4e519c3e7dd16196b0142c"
-    };
+    document.addEventListener("DOMContentLoaded", function () {
+      const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
+        authDomain: "exam-app-f9bce.firebaseapp.com",
+        projectId: "exam-app-f9bce",
+        storageBucket: "exam-app-f9bce.firebasestorage.app",
+        messagingSenderId: "818751284037",
+        appId: "1:818751284037:web:4e519c3e7dd16196b0142c"
+      };
 
-    firebase.initializeApp(FIREBASE_CONFIG);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+      firebase.initializeApp(FIREBASE_CONFIG);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
 
-    async function ensureAdmin() {
-      const user = auth.currentUser;
-      if (user) return user;
-      const email = prompt("Admin email:");
-      const pass = prompt("Password:");
-      if (!email || !pass) return null;
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        return auth.currentUser;
-      } catch (e) {
-        alert("Sign in failed: " + e.message);
-        return null;
-      }
-    }
+      document.getElementById("logout").addEventListener("click", () => auth.signOut());
 
-    document.getElementById("logout").addEventListener("click", () => auth.signOut());
+      document.getElementById("createTest").addEventListener("click", async () => {
+        const kodeTes = document.getElementById("kodeTes").value.trim();
+        const title = document.getElementById("title").value.trim();
+        const pdfUrl = document.getElementById("pdfUrl").value.trim();
+        const keyUrl = document.getElementById("keyUrl").value.trim();
+        const duration = parseInt(document.getElementById("duration").value.trim());
+        const numQuestions = parseInt(document.getElementById("numQuestions").value.trim());
 
-    document.getElementById("createTest").addEventListener("click", async () => {
-  const kodeTes = document.getElementById("kodeTes").value.trim();
-  const title = document.getElementById("title").value.trim();
-  const pdfUrl = document.getElementById("pdfUrl").value.trim();
-  const keyUrl = document.getElementById("keyUrl").value.trim();
-  const duration = parseInt(document.getElementById("duration").value.trim());
-  const numQuestions = parseInt(document.getElementById("numQuestions").value.trim());
-
-  if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
-    alert("Please fill all fields!");
-    return;
-  }
-
-  try {
-    await db.collection("tests").add({
-      kodeTes,
-      title,
-      pdfUrl,
-      keyUrl,
-      duration,
-      numQuestions,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      status: "active"
-    });
-    alert("✅ Test created successfully!");
-    document.querySelectorAll("input").forEach(i => (i.value = ""));
-    loadTests();
-  } catch (err) {
-    alert("❌ Failed to create test: " + err.message);
-  }
-});
-
-
-    async function loadTests() {
-      const list = document.getElementById("testsList");
-      list.innerHTML = "";
-      try {
-        const snap = await db.collection("tests")
-          .where("status", "==", "active")
-          .orderBy("createdAt", "desc")
-          .get();
-
-        if (snap.empty) {
-          list.innerHTML = "<div class='small'>No active tests.</div>";
+        if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
+          alert("Please fill all fields!");
           return;
         }
 
-        snap.forEach(doc => {
-          const d = doc.data();
-          const el = document.createElement("div");
-          el.className = "test-card";
-          el.innerHTML = `
-            <div>
-              <strong>${d.title}</strong>
-              <div class="test-meta">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div>
-            </div>
-            <div style="display:flex;gap:6px;">
-              <button class="btn" onclick="window.open('student.html?test=${doc.id}','_blank')">Open</button>
-              <button class="btn secondary" onclick="deleteTest('${doc.id}')">Delete</button>
-            </div>`;
-          list.appendChild(el);
-        });
-      } catch {
-        list.innerHTML = "<div class='small'>Unable to load tests.</div>";
-      }
-    }
+        try {
+          await db.collection("tests").add({
+            kodeTes,
+            title,
+            pdfUrl,
+            keyUrl,
+            duration,
+            numQuestions,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            status: "active"
+          });
+          alert("✅ Test created successfully!");
+          document.querySelectorAll("input").forEach(i => (i.value = ""));
+          loadTests();
+        } catch (err) {
+          alert("❌ Failed to create test: " + err.message);
+        }
+      });
 
-    async function deleteTest(id) {
-      if (confirm("Delete this test?")) {
-        await db.collection("tests").doc(id).delete();
-        loadTests();
-      }
-    }
+      async function loadTests() {
+        const list = document.getElementById("testsList");
+        list.innerHTML = "<div class='small'>Loading tests...</div>";
 
-    loadTests();
+        try {
+          const snap = await db.collection("tests").get(); // simple fetch
+          if (snap.empty) {
+            list.innerHTML = "<div class='small'>No active tests.</div>";
+            return;
+          }
+
+          list.innerHTML = "";
+          snap.forEach(doc => {
+            const d = doc.data();
+            if (d.status !== "active") return;
+            const el = document.createElement("div");
+            el.className = "test-card";
+            el.innerHTML = `
+              <div>
+                <strong>${d.title}</strong>
+                <div class="test-meta">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn" onclick="window.open('student.html?test=${doc.id}','_blank')">Open</button>
+                <button class="btn secondary" onclick="deleteTest('${doc.id}')">Delete</button>
+              </div>`;
+            list.appendChild(el);
+          });
+        } catch (err) {
+          list.innerHTML = `<div class='small'>Error loading tests: ${err.message}</div>`;
+        }
+      }
+
+      window.deleteTest = async function (id) {
+        if (confirm("Delete this test?")) {
+          await db.collection("tests").doc(id).delete();
+          loadTests();
+        }
+      };
+
+      loadTests();
+    });
   </script>
 </body>
 </html>
