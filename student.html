@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student — Ittihadul Exam</title>
+  <link rel="icon" href="https://i.imgur.com/3HOXdjB.png" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="app-device">
+      <header class="header">
+        <img src="https://i.imgur.com/3HOXdjB.png" class="logo" />
+        <div class="title">
+          SMPIT–SMAIT Ittihadul Muwahidin<br>
+          <span style="font-weight:400;font-size:12px">Student</span>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Student Dashboard -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Available Tests</strong>
+              <div class="test-meta">Choose and start</div>
+            </div>
+            <div><button id="btnAuth" class="btn secondary">Login</button></div>
+          </div>
+        </div>
+
+        <div id="testsList" class="card">
+          <div class="small">Loading available tests…</div>
+        </div>
+
+        <div id="examArea" class="hidden"></div>
+
+        <div class="footer">
+          Answers saved locally. Connect to internet to submit.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF.js + Firebase -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+
+  <script>
+    // Initialize Firebase
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const testsList = document.getElementById('testsList');
+    const examArea = document.getElementById('examArea');
+    const btnAuth = document.getElementById('btnAuth');
+
+    let answers = {};
+    const STORAGE_KEY = 'exam_v4_answers';
+
+    // Auth logic
+    btnAuth.addEventListener('click', () => showAuth());
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        btnAuth.textContent = 'Logout';
+        btnAuth.onclick = () => auth.signOut();
+        loadTests();
+      } else {
+        btnAuth.textContent = 'Login';
+        btnAuth.onclick = () => showAuth();
+        testsList.innerHTML = '<div class="small">Please login to see tests.</div>';
+      }
+    });
+
+    function showAuth() {
+      const mode = prompt('Type "login" or "signup"');
+      if (mode === 'signup') {
+        const e = prompt('Email');
+        const p = prompt('Password');
+        if (e && p)
+          auth.createUserWithEmailAndPassword(e, p)
+            .then(() => alert('Account created'))
+            .catch(e => alert(e.message));
+      } else {
+        const e = prompt('Email');
+        const p = prompt('Password');
+        if (e && p)
+          auth.signInWithEmailAndPassword(e, p)
+            .catch(e => alert(e.message));
+      }
+    }
+
+    // Load available tests
+    async function loadTests() {
+      testsList.innerHTML = '';
+      try {
+        const snap = await db.collection('tests')
+          .where('status', '==', 'active')
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        if (snap.empty) {
+          testsList.innerHTML = '<div class="small">No tests available</div>';
+          return;
+        }
+
+        snap.forEach(doc => {
+          const d = doc.data();
+          const el = document.createElement('div');
+          el.className = 'test-card';
+          el.innerHTML = `
+            <div>
+              <strong>${d.title}</strong>
+              <div class="test-meta">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div>
+            </div>
+            <div><button class="btn" data-id="${doc.id}">Start</button></div>`;
+          testsList.appendChild(el);
+        });
+
+        testsList.querySelectorAll('.btn').forEach(b =>
+          b.addEventListener('click', () => startTest(b.dataset.id))
+        );
+      } catch (e) {
+        testsList.innerHTML = '<div class="small">Unable to load tests.</div>';
+      }
+    }
+
+    // Start a test
+    async function startTest(testId) {
+      const docSnap = await db.collection('tests').doc(testId).get();
+      if (!docSnap.exists) return alert('Test not found');
+      const d = docSnap.data();
+
+      testsList.style.display = 'none';
+      examArea.classList.remove('hidden');
+
+      examArea.innerHTML = `
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>${d.title}</strong>
+              <div class="test-meta">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div>
+            </div>
+            <div><button id="btnBack" class="btn secondary">Back</button></div>
+          </div>
+        </div>
+
+        <div id="pdfArea" class="card">
+          <div id="pdfContainer" class="center"><div class="notice">Loading PDF…</div></div>
+        </div>
+
+        <div id="answerArea" class="card answersheet"></div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button id="submitBtn" class="btn" disabled>Submit</button>
+        </div>
+      `;
+
+      document.getElementById('btnBack').addEventListener('click', () => {
+        examArea.classList.add('hidden');
+        testsList.style.display = 'block';
+      });
+
+      loadPDF(d.pdfUrl);
+      buildAnswerSheet(d.numQuestions || 40);
+      fetch(d.keyUrl).then(r => r.text()).then(txt => window.__KEY = parseCSV(txt));
+      document.getElementById('submitBtn').disabled = false;
+    }
+
+    // Load PDF
+    function loadPDF(url) {
+      const container = document.getElementById('pdfContainer');
+      container.innerHTML = '<canvas class="pdf-canvas"></canvas>';
+      const canvas = container.querySelector('canvas');
+
+      pdfjsLib.getDocument(url).promise.then(pdf => {
+        container.innerHTML = '';
+        for (let p = 1; p <= pdf.numPages; p++) {
+          pdf.getPage(p).then(page => {
+            const vp = page.getViewport({ scale: 1 });
+            const c = document.createElement('canvas');
+            c.className = 'pdf-canvas';
+            const ctx = c.getContext('2d');
+            c.width = vp.width;
+            c.height = vp.height;
+            page.render({ canvasContext: ctx, viewport: vp });
+            container.appendChild(c);
+          });
+        }
+      }).catch(err => {
+        container.innerHTML = `
+          <div class="small">
+            Failed to load PDF.
+            <a href="${url}" target="_blank">Open in new tab</a>
+          </div>`;
+      });
+    }
+
+    // Build answer sheet
+    function buildAnswerSheet(n) {
+      const area = document.getElementById('answerArea');
+      area.innerHTML = '';
+      for (let i = 1; i <= n; i++) {
+        const row = document.createElement('div');
+        row.className = 'qrow';
+        row.innerHTML = `
+          <div class="qnum">${i}</div>
+          <div class="opt-group">
+            ${['A', 'B', 'C', 'D', 'E'].map(ch => `
+              <div class="opt" data-q="${i}" data-val="${ch}">${ch}</div>`).join('')}
+          </div>`;
+        area.appendChild(row);
+      }
+
+      Array.from(area.querySelectorAll('.opt')).forEach(o =>
+        o.addEventListener('click', () => {
+          const q = o.dataset.q;
+          Array.from(document.querySelectorAll(\`.opt[data-q="\${q}"]\`))
+            .forEach(x => x.classList.remove('selected'));
+          o.classList.add('selected');
+          answers['q' + q] = o.dataset.val;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+        })
+      );
+    }
+
+    // CSV parser
+    function parseCSV(txt) {
+      const rows = txt.split(/\r?\n/).map(r => r.trim()).filter(Boolean);
+      const out = {};
+      rows.forEach(r => {
+        const p = r.split(',');
+        if (p.length >= 2) {
+          const no = Number(p[0].trim());
+          const ans = p[1].trim().toUpperCase();
+          if (!isNaN(no)) out[no] = ans;
+        }
+      });
+      return out;
+    }
+
+    // Submit answers
+    document.addEventListener('click', async (e) => {
+      if (e.target && e.target.id === 'submitBtn') {
+        try {
+          const payload = {
+            testId: window.currentTestId || '',
+            userId: auth.currentUser.uid,
+            answers: answers,
+            score: 0,
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          await db.collection('results').add(payload);
+          alert('Submitted successfully!');
+        } catch (err) {
+          alert('Submit failed: ' + err.message);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
