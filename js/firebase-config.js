@@ -1,7 +1,7 @@
 // Firebase Configuration
 // You can replace these values with your own Firebase project config if needed.
 
-const FIREBASE_CONFIG = {
+const firebaseConfig = {
   apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
   authDomain: "exam-app-f9bce.firebaseapp.com",
   projectId: "exam-app-f9bce",
