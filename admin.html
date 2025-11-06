@@ -7,109 +7,139 @@
   <link rel="icon" href="https://i.imgur.com/3HOXdjB.png" />
 
   <style>
-    body {
-      background: #e9f5e9;
-      font-family: 'Inter', system-ui, sans-serif;
-      color: #1a1a1a;
-      margin: 0;
-      padding: 0;
+    :root {
+      --green-dark: #2f704d;
+      --green-main: #3d8658;
+      --green-light: #eaf5ed;
+      --white: #ffffff;
+      --gray-text: #444;
     }
 
-    .container {
+    body {
+      background: var(--green-light);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--gray-text);
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 40px 16px;
+      min-height: 100vh;
     }
 
     .app-device {
       width: 100%;
       max-width: 420px;
+      margin-top: 40px;
     }
 
+    /* HEADER */
     .header {
-      background: #2e7d57;
-      color: white;
-      border-radius: 12px 12px 0 0;
-      padding: 20px;
+      background: var(--green-main);
+      color: var(--white);
+      border-radius: 16px 16px 0 0;
       text-align: center;
+      padding: 20px 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     .header img {
-      width: 68px;
-      height: 68px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
-      display: block;
-      margin: 0 auto 8px;
+      margin-bottom: 8px;
     }
 
-    .title {
-      font-size: 16px;
+    .header .title {
+      font-size: 17px;
       font-weight: 600;
-      line-height: 1.4;
     }
 
+    .header span {
+      font-weight: 400;
+      font-size: 13px;
+      opacity: .9;
+    }
+
+    /* FORM CARD */
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 18px;
-      margin-top: 16px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      background: var(--white);
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 10px;
+      margin-bottom: 4px;
     }
 
     input {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1px solid #d2e4d6;
-      margin-top: 10px;
+      border: 1px solid #cfded1;
       font-size: 14px;
-      outline: none;
-      background: #fafdfb;
+      background: #f9fdfb;
+      transition: border 0.2s, background 0.2s;
     }
 
     input:focus {
-      border-color: #388e3c;
-      background: #f5fff5;
+      border-color: var(--green-main);
+      background: #f3fff5;
+      outline: none;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
     }
 
     .btn {
-      background: #4caf50;
-      color: white;
+      background: var(--green-main);
+      color: var(--white);
       border: none;
       padding: 10px 18px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
 
     .btn:hover {
-      background: #3a9444;
+      background: var(--green-dark);
     }
 
     .btn.secondary {
-      background: #edf6f0;
+      background: #f2f6f3;
       color: #333;
+      border: 1px solid #d8e2db;
     }
 
-    .small {
-      font-size: 13px;
-      color: #5b5b5b;
+    .section-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 6px;
     }
 
     .footer {
       text-align: center;
       font-size: 12px;
-      color: #4c4c4c;
-      margin-top: 16px;
+      color: #5a5a5a;
+      margin-top: 20px;
     }
 
     .test-card {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #eef5ef;
+      border-bottom: 1px solid #eef3ef;
       padding: 8px 0;
     }
 
@@ -118,62 +148,67 @@
       color: #5c6f63;
     }
 
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-      justify-content: flex-end;
+    .small {
+      font-size: 13px;
+      color: #666;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="app-device">
-      <header class="header">
-        <img src="https://i.imgur.com/3HOXdjB.png" alt="Logo">
-        <div class="title">
-          SMPIT–SMAIT Ittihadul Muwahidin<br>
-          <span style="font-weight:400;font-size:13px;opacity:.9">Admin Panel</span>
-        </div>
-      </header>
+  <div class="app-device">
+    <!-- HEADER -->
+    <header class="header">
+      <img src="https://i.imgur.com/3HOXdjB.png" alt="Logo">
+      <div class="title">SMPIT–SMAIT Ittihadul Muwahidin</div>
+      <span>Admin Panel</span>
+    </header>
 
-      <!-- Create Test -->
-      <div class="card">
-        <h3 style="margin-top:0;">Create Test</h3>
-        <div class="small" style="color:#5b5b5b;margin-bottom:10px">Fill all fields below.</div>
+    <!-- FORM -->
+    <div class="card">
+      <div class="section-title">Create New Test</div>
+      <div class="small">Fill all fields below carefully.</div>
 
-        <input id="kodeTes" placeholder="Test Code (e.g., ENG101)" />
-        <input id="title" placeholder="Title (e.g., English Practice 1)" />
-        <input id="pdfUrl" placeholder="Google Drive PDF link (view)" />
-        <input id="keyUrl" placeholder="Google Drive CSV link (download)" />
-        <input id="duration" type="number" placeholder="Duration (minutes)" />
-        <input id="numQuestions" type="number" placeholder="Number of Questions" />
+      <label for="kodeTes">Test Code</label>
+      <input id="kodeTes" placeholder="e.g., ENG101" />
 
-        <div class="btn-group">
-          <button id="createTest" class="btn">Create</button>
-          <button id="logout" class="btn secondary">Logout</button>
-        </div>
+      <label for="title">Title</label>
+      <input id="title" placeholder="e.g., English Practice 1" />
+
+      <label for="pdfUrl">Google Drive PDF (view link)</label>
+      <input id="pdfUrl" placeholder="https://drive.google.com/uc?export=view&id=..." />
+
+      <label for="keyUrl">Answer Key CSV (download link)</label>
+      <input id="keyUrl" placeholder="https://drive.google.com/uc?export=download&id=..." />
+
+      <label for="duration">Duration (minutes)</label>
+      <input id="duration" type="number" placeholder="e.g., 90" />
+
+      <label for="numQuestions">Number of Questions</label>
+      <input id="numQuestions" type="number" placeholder="e.g., 50" />
+
+      <div class="btn-group">
+        <button id="createTest" class="btn">Create</button>
+        <button id="logout" class="btn secondary">Logout</button>
       </div>
+    </div>
 
-      <!-- Active Tests -->
-      <div class="card">
-        <h4 style="margin-top:0;">Active Tests</h4>
-        <div id="testsList" class="small" style="margin-top:8px;color:#4a4a4a;">Loading…</div>
-      </div>
+    <!-- ACTIVE TESTS -->
+    <div class="card">
+      <div class="section-title">Active Tests</div>
+      <div id="testsList" class="small">Loading…</div>
+    </div>
 
-      <div class="footer">
-        Deploy-ready for GitHub Pages • Firebase Auth + Firestore
-      </div>
+    <div class="footer">
+      Deploy-ready for GitHub Pages • Firebase Auth + Firestore
     </div>
   </div>
 
-  <!-- Firebase -->
+  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
-    // Your Firebase config here
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
       authDomain: "exam-app-f9bce.firebaseapp.com",
@@ -190,16 +225,14 @@
     async function ensureAdmin() {
       const user = auth.currentUser;
       if (user) return user;
-
-      const email = prompt('Admin email:');
-      const pass = prompt('Password:');
+      const email = prompt("Admin email:");
+      const pass = prompt("Password:");
       if (!email || !pass) return null;
-
       try {
         await auth.signInWithEmailAndPassword(email, pass);
         return auth.currentUser;
       } catch (e) {
-        alert('Sign in failed: ' + e.message);
+        alert("Sign in failed: " + e.message);
         return null;
       }
     }
@@ -217,7 +250,7 @@
       const numQuestions = parseInt(document.getElementById("numQuestions").value.trim());
 
       if (!kodeTes || !title || !pdfUrl || !keyUrl || !duration || !numQuestions) {
-        alert("Please fill all fields!");
+        alert("⚠️ Please fill all fields!");
         return;
       }
 
@@ -233,7 +266,7 @@
           status: "active"
         });
         alert("✅ Test created successfully!");
-        document.querySelectorAll("input").forEach(i => (i.value = ""));
+        document.querySelectorAll("input").forEach(i => i.value = "");
         loadTests();
       } catch (err) {
         alert("❌ Failed to create test: " + err.message);
@@ -250,7 +283,7 @@
           .get();
 
         if (snap.empty) {
-          list.innerHTML = "<div class='small'>No tests found.</div>";
+          list.innerHTML = "<div class='small'>No active tests.</div>";
           return;
         }
 
@@ -274,7 +307,6 @@
       }
     }
 
-    // Delete test
     async function deleteTest(id) {
       if (confirm("Delete this test?")) {
         await db.collection("tests").doc(id).delete();
