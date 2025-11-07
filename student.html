@@ -266,7 +266,16 @@
       examArea.style.display = 'block';
 
       // load pdf into iframe
-      pdfFrame.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(d.pdfUrl)}`;
+      if (d.pdfUrl.includes("uc?export=download")) {
+      const match = d.pdfUrl.match(/id=([^&]+)/);
+      if (match) {
+      pdfFrame.src = `https://drive.google.com/file/d/${match[1]}/preview`;
+      } else {
+      pdfFrame.src = d.pdfUrl;
+      }
+      } else {
+      pdfFrame.src = d.pdfUrl;
+      }
 
       // setup storage key per user+test
       const uid = (auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : 'anon';
