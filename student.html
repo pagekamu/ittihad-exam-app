@@ -6,136 +6,218 @@
   <title>Student — Ittihadul Exam</title>
   <link rel="icon" href="https://i.imgur.com/3HOXdjB.png" />
   <style>
-    :root {
-      --green-main: #3b8358;
-      --green-dark: #2f704d;
-      --bg: #e8f3ea;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --text: #223;
+    :root{
+      --green-main:#3b8358;
+      --green-dark:#2f704d;
+      --bg:#e8f3ea;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --text:#223;
+    }
+    *{box-sizing:border-box;font-family:Inter,system-ui,Arial,sans-serif}
+    body{margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;display:flex;justify-content:center}
+    .wrap{width:100%;max-width:920px;padding:18px}
+    /* top device-like column (centered mobile feel) */
+    .device{max-width:720px;margin:0 auto}
+    .header{
+      display:flex;gap:12px;align-items:center;background:var(--green-main);color:#fff;padding:12px 16px;border-radius:12px;
+    }
+    .header img{width:52px;height:52px;border-radius:8px;background:#fff;padding:6px}
+    .title{font-weight:700;font-size:16px;line-height:1}
+    .subtitle{font-weight:400;font-size:12px;opacity:.95}
+    .top-right{margin-left:auto;text-align:right;color:rgba(255,255,255,.95);font-size:12px}
+    .card{background:var(--card);padding:14px;border-radius:12px;margin-top:12px;box-shadow:0 6px 18px rgba(11,22,11,0.04)}
+    .small{font-size:13px;color:var(--muted)}
+    /* PDF area */
+    .pdf-frame{width:100%;height:460px;border-radius:8px;border:1px solid #e6efe8;overflow:hidden}
+    iframe.pdf{width:100%;height:100%;border:0}
+    /* answer sheet */
+    .answersheet{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .qrow{display:flex;align-items:center;gap:12px;padding:8px;border-radius:10px;background:#fbfff9}
+    .qnum{min-width:46px;min-height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;background:#dff3e3;color:var(--green-dark)}
+    .opt-group{display:flex;gap:10px;flex-wrap:wrap}
+    .opt{
+      width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #cfe8d6;cursor:pointer;background:#fff;font-weight:700;color:var(--text);
+      transition:all .12s ease;
+    }
+    .opt.selected{background:var(--green-main);color:#fff;border-color:var(--green-main);transform:scale(1.04);box-shadow:0 6px 18px rgba(11,22,11,0.06)}
+    .controls{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .timer{font-weight:700;color:var(--green-dark)}
+    .btn{background:var(--green-main);color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700}
+    .btn.secondary{background:#eef7ef;color:var(--green-dark);border:1px solid #d8eedb}
+    .notice{font-size:13px;color:var(--muted);margin-top:8px;text-align:center}
+    .modal{
+      position:fixed;left:10px;right:10px;top:20%;max-width:540px;margin:0 auto;background:white;border-radius:12px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,0.12);
+      z-index:9999;
+    }
+      /* === MOBILE RESPONSIVE FIX (COMPLETE REPLACEMENT) === */
+  @media (max-width:720px){
+    .pdf-frame {
+      height: 360px;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
-    * { box-sizing: border-box; font-family: "Inter", system-ui, sans-serif; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
+    .qnum,
+    .opt {
+      width: 44px;
+      height: 44px;
+      font-size: 14px;
     }
 
-    .wrap { width: 100%; max-width: 920px; padding: 18px; }
-    .header {
-      display: flex; gap: 12px; align-items: center;
-      background: var(--green-main); color: #fff;
-      padding: 12px 16px; border-radius: 12px;
+    .header img {
+      width: 48px;
+      height: 48px;
     }
 
-    .header img { width: 52px; height: 52px; border-radius: 8px; background: #fff; padding: 6px; }
-    .title { font-weight: 700; font-size: 16px; line-height: 1; }
-    .subtitle { font-weight: 400; font-size: 12px; opacity: .95; }
-    .card { background: var(--card); padding: 14px; border-radius: 12px; margin-top: 12px; box-shadow: 0 6px 18px rgba(11,22,11,0.04); }
-    .small { font-size: 13px; color: var(--muted); }
+    .answersheet {
+      gap: 8px;
+    }
 
-    .pdf-frame { width: 100%; height: 320px; border-radius: 8px; border: 1px solid #e6efe8; overflow: hidden; position: sticky; top: 0; z-index: 5; background: white; }
-    iframe.pdf { width: 100%; height: 100%; border: 0; }
+    .opt-group {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+  }
 
-    .answersheet-container { overflow-y: auto; max-height: calc(100vh - 370px); padding: 10px; }
-    .answersheet { display: flex; flex-direction: column; gap: 10px; }
-    .qrow { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 10px; background: #fbfff9; }
-    .qnum { min-width: 42px; min-height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; background: #dff3e3; color: var(--green-dark); }
-    .opt-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  @media (max-width:480px){
+    .wrap {
+      padding: 10px;
+    }
+
+    .pdf-frame {
+      height: 320px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .qrow {
+      padding: 4px;
+      gap: 6px;
+    }
+
+    .qnum {
+      min-width: 36px;
+      min-height: 36px;
+      font-size: 13px;
+    }
 
     .opt {
-      width: 42px; height: 42px; border-radius: 50%; display: flex;
-      align-items: center; justify-content: center;
-      border: 2px solid #cfe8d6; background: #fff; color: var(--text);
-      font-weight: 700; cursor: pointer; transition: all .12s ease;
+      width: 36px;
+      height: 36px;
+      font-size: 13px;
     }
-    .opt.selected { background: var(--green-main); color: #fff; border-color: var(--green-main); transform: scale(1.05); box-shadow: 0 3px 10px rgba(11,22,11,0.1); }
 
-    .controls { display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 12px; flex-wrap: wrap; }
-    .timer { font-weight: 700; color: var(--green-dark); }
-    .btn { background: var(--green-main); color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
-    .btn.secondary { background: #eef7ef; color: var(--green-dark); border: 1px solid #d8eedb; }
-    .notice { font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center; }
-
-    @media (max-width:480px){
-      .pdf-frame { height: 260px; }
-      .qnum, .opt { width: 34px; height: 34px; font-size: 13px; }
-      .answersheet-container { max-height: calc(100vh - 310px); }
+    .answersheet {
+      gap: 6px;
     }
+
+    .opt-group {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+  }
+
+  @media (max-width:380px){
+    .pdf-frame {
+      height: 280px;
+    }
+
+    .qnum,
+    .opt {
+      width: 34px;
+      height: 34px;
+      font-size: 12px;
+    }
+  }
+
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <!-- Header (disembunyikan setelah ujian mulai) -->
-    <div class="header" id="mainHeader">
-      <img src="https://i.imgur.com/3HOXdjB.png" alt="logo">
-      <div>
-        <div class="title">SMPIT–SMAIT Ittihadul Muwahidin</div>
-        <div class="subtitle">Online Exam</div>
-      </div>
-    </div>
-
-    <!-- List Tes -->
-    <div class="card" id="listArea">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="device">
+      <div class="header">
+        <img src="https://i.imgur.com/3HOXdjB.png" alt="logo">
         <div>
-          <strong>Available Tests</strong>
-          <div class="small">Login to start your exam</div>
+          <div class="title">SMPIT–SMAIT Ittihadul Muwahidin</div>
+          <div class="subtitle">Student</div>
         </div>
-        <div><button id="btnAuth" class="btn secondary">Login / Signup</button></div>
-      </div>
-      <div id="testsList" class="small" style="margin-top:12px">Loading available tests…</div>
-    </div>
-
-    <!-- Area ujian -->
-    <div id="examArea" style="display:none;margin-top:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-        <div>
-          <strong id="testTitle">Test Title</strong>
-          <div class="small" id="testMeta">code • duration • q</div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div class="timer" id="countdown">--:--</div>
-          <button id="btnBack" class="btn secondary">Back</button>
+        <div class="top-right">
+          <div id="userEmail">Not signed in</div>
+          <div class="small" id="localNotice">Answers saved locally</div>
         </div>
       </div>
 
-      <!-- PDF viewer -->
-      <div class="pdf-frame" style="margin-top:8px;">
-        <iframe id="pdfFrame" class="pdf" src="" allow="fullscreen"></iframe>
-      </div>
-
-      <!-- scrollable answer sheet -->
-      <div class="answersheet-container">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div><strong>Answer Sheet</strong><div class="small" id="asInfo"></div></div>
-          <div class="small">Click A–E to select</div>
-        </div>
-
-        <div id="answerArea" class="answersheet"></div>
-
-        <div class="controls">
-          <div class="small" id="progressInfo">0 / 0 answered</div>
-          <div style="display:flex;gap:8px">
-            <button id="btnClear" class="btn secondary">Reset</button>
-            <button id="btnSubmit" class="btn">Submit</button>
+      <div class="card" id="mainCard">
+        <div id="listArea">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Available Tests</strong>
+              <div class="small">Login to start</div>
+            </div>
+            <div>
+              <button id="btnAuth" class="btn secondary">Login / Signup</button>
+            </div>
           </div>
+          <div id="testsList" class="small" style="margin-top:12px">Loading available tests…</div>
+        </div>
+
+        <!-- exam area (hidden until test opened) -->
+        <div id="examArea" class="hidden" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div>
+              <strong id="testTitle">Test Title</strong>
+              <div class="small" id="testMeta">code • duration • q</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="timer" id="countdown">--:--:--</div>
+              <button id="btnBack" class="btn secondary">Back</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="card">
+            <div class="small">Question paper</div>
+            <div class="pdf-frame" style="margin-top:8px">
+              <iframe id="pdfFrame" class="pdf" src="" allow="fullscreen" style="width:100%;height:460px;border:none;position:sticky;top:0;z-index:5;"></iframe>
+              <div id="answersheetContainer" style="max-height:calc(100vh - 480px);overflow-y:auto;padding:10px;">
+            <div id="answerArea"></div>
+          </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong>Answer Sheet</strong><div class="small" id="asInfo"></div></div>
+              <div class="small">Click A–E to select</div>
+            </div>
+
+            <div id="answerArea" class="answersheet"></div>
+
+            <div class="controls">
+              <div class="small" id="progressInfo">0 / 0 answered</div>
+              <div style="display:flex;gap:8px">
+                <button id="btnClear" class="btn secondary">Reset Answers</button>
+                <button id="btnSubmit" class="btn">Submit Answers</button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+
+      <div class="notice">Make sure you complete all answers before submitting — empty answers are not allowed.</div>
     </div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase libs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script>
+  /********** FIREBASE CONFIG - replace if you want your own project **********/
   const FIREBASE_CONFIG = {
     apiKey: "AIzaSyDT8Rgg8Rt-6jmA6wg0hJJOOhsKOWNqD-U",
     authDomain: "exam-app-f9bce.firebaseapp.com",
@@ -144,103 +226,321 @@
     messagingSenderId: "818751284037",
     appId: "1:818751284037:web:4e519c3e7dd16196b0142c"
   };
+  /***************************************************************************/
+
   firebase.initializeApp(FIREBASE_CONFIG);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  const btnAuth=document.getElementById('btnAuth');
-  const listArea=document.getElementById('listArea');
-  const examArea=document.getElementById('examArea');
-  const pdfFrame=document.getElementById('pdfFrame');
-  const answerArea=document.getElementById('answerArea');
-  const btnSubmit=document.getElementById('btnSubmit');
-  const btnClear=document.getElementById('btnClear');
-  const countdownEl=document.getElementById('countdown');
-  const testTitleEl=document.getElementById('testTitle');
-  const testMetaEl=document.getElementById('testMeta');
-  const progressInfo=document.getElementById('progressInfo');
-  const mainHeader=document.getElementById('mainHeader');
+  // UI refs
+  const btnAuth = document.getElementById('btnAuth');
+  const testsList = document.getElementById('testsList');
+  const listArea = document.getElementById('listArea');
+  const examArea = document.getElementById('examArea');
+  const btnBack = document.getElementById('btnBack');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const answerArea = document.getElementById('answerArea');
+  const btnSubmit = document.getElementById('btnSubmit');
+  const btnClear = document.getElementById('btnClear');
+  const countdownEl = document.getElementById('countdown');
+  const testTitleEl = document.getElementById('testTitle');
+  const testMetaEl = document.getElementById('testMeta');
+  const progressInfo = document.getElementById('progressInfo');
+  const userEmailEl = document.getElementById('userEmail');
+  const asInfoEl = document.getElementById('asInfo');
 
-  let currentTest=null,answers={},timerInterval=null,currentUser=null;
+  let currentTest = null;
+  let answers = {}; // {1:'A',2:'C',...}
+  let timerInterval = null;
+  let STORAGE_PREFIX = 'exam_v4_'; // will append testId and userId
+  let currentUser = null;
 
-  auth.onAuthStateChanged(u=>{
-    currentUser=u;
-    if(u){loadTests();btnAuth.textContent='Logout';btnAuth.onclick=()=>auth.signOut();}
-    else{btnAuth.textContent='Login / Signup';btnAuth.onclick=()=>showAuth();}
+  // Auth UI (prompt-based simple)
+  btnAuth.addEventListener('click', showAuth);
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    if(user){
+      userEmailEl.textContent = user.email;
+      btnAuth.textContent = 'Logout';
+      btnAuth.classList.remove('btn','secondary');
+      btnAuth.classList.add('btn','secondary'); // keep style
+      btnAuth.onclick = () => auth.signOut();
+      loadTests();
+    } else {
+      userEmailEl.textContent = 'Not signed in';
+      btnAuth.textContent = 'Login / Signup';
+      btnAuth.onclick = showAuth;
+      testsList.innerHTML = '<div class="small">Please login to see tests.</div>';
+    }
   });
 
   function showAuth(){
-    const mode=prompt('Type "signup" to create account or "login" to sign in')?.trim().toLowerCase();
-    const e=prompt('Email'); const p=prompt('Password (min 6)');
-    if(!e||!p)return;
-    if(mode==='signup')auth.createUserWithEmailAndPassword(e,p).then(()=>alert('Account created')).catch(er=>alert(er.message));
-    else auth.signInWithEmailAndPassword(e,p).catch(er=>alert(er.message));
+    const mode = prompt('Type "signup" to create an account or "login" to sign in').trim().toLowerCase();
+    if(mode === 'signup'){
+      const e = prompt('Email'); const p = prompt('Password (min 6)');
+      if(e && p) auth.createUserWithEmailAndPassword(e,p).then(()=>alert('Account created')).catch(e=>alert(e.message));
+    } else {
+      const e = prompt('Email'); const p = prompt('Password');
+      if(e && p) auth.signInWithEmailAndPassword(e,p).catch(e=>alert(e.message));
+    }
   }
 
+  // Load available tests
   async function loadTests(){
-    const list=document.getElementById('testsList');list.innerHTML='';
-    const snap=await db.collection('tests').where('status','==','active').orderBy('createdAt','desc').get();
-    if(snap.empty){list.innerHTML='<div>No tests</div>';return;}
-    snap.forEach(doc=>{
-      const d=doc.data();
-      const el=document.createElement('div');
-      el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
-        <div><strong>${d.title}</strong><div class="small">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div></div>
-        <button class="btn secondary" data-id="${doc.id}">Open</button></div>`;
-      el.querySelector('button').addEventListener('click',()=>startTest(doc.id));
-      list.appendChild(el);
-    });
+    testsList.innerHTML = '';
+    try {
+      const snap = await db.collection('tests').where('status','==','active').orderBy('createdAt','desc').get();
+      if(snap.empty){ testsList.innerHTML = '<div class="small">No tests available</div>'; return; }
+      snap.forEach(doc=>{
+        const d = doc.data();
+        const el = document.createElement('div');
+        el.style.display = 'flex';
+        el.style.justifyContent = 'space-between';
+        el.style.alignItems = 'center';
+        el.style.padding = '8px 0';
+        el.innerHTML = `<div><strong>${d.title}</strong><div class="small">${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q</div></div>
+          <div><button class="btn secondary" data-id="${doc.id}">Open</button></div>`;
+        testsList.appendChild(el);
+      });
+      // bind open buttons
+      Array.from(testsList.querySelectorAll('button[data-id]')).forEach(b=>b.addEventListener('click', ()=> startTest(b.dataset.id)));
+    } catch(e){
+      testsList.innerHTML = '<div class="small">Unable to load tests.</div>';
+      console.error(e);
+    }
   }
 
-  async function startTest(id){
-    const doc=await db.collection('tests').doc(id).get();
-    if(!doc.exists)return alert('Test not found');
-    const d=doc.data();currentTest={id,...d};
-    mainHeader.style.display='none';
-    listArea.style.display='none';
-    examArea.style.display='block';
-    testTitleEl.textContent=d.title;
-    testMetaEl.textContent=`${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q`;
-    if(d.pdfUrl.includes("uc?export=download")){
-      const m=d.pdfUrl.match(/id=([^&]+)/);
-      pdfFrame.src=m?`https://drive.google.com/file/d/${m[1]}/preview`:d.pdfUrl;
-    }else pdfFrame.src=d.pdfUrl;
-    buildSheet(d.numQuestions);startTimer(d.duration||120);
+  // read testId from query param if present
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramTestId = urlParams.get('test');
+
+  if(paramTestId){
+    // if user already logged in, fetch; else wait for auth then fetch
+    if(auth.currentUser) startTest(paramTestId);
+    else {
+      // try once after auth state if they sign-in
+      const un = auth.onAuthStateChanged(u => { if(u) { startTest(paramTestId); un(); }});
+    }
   }
 
-  function buildSheet(n){
-    answerArea.innerHTML='';
+  // Start test
+  async function startTest(testId){
+    try {
+      const doc = await db.collection('tests').doc(testId).get();
+      if(!doc.exists) return alert('Test not found');
+      const d = doc.data();
+      currentTest = { id: testId, ...d };
+
+      // populate header
+      testTitleEl.textContent = d.title;
+      testMetaEl.textContent = `${d.kodeTes} • ${d.duration} min • ${d.numQuestions} q`;
+      asInfoEl.textContent = `Total ${d.numQuestions} questions.`;
+
+      // show exam area
+      listArea.style.display = 'none';
+      examArea.style.display = 'block';
+
+      // load pdf into iframe
+      if (d.pdfUrl.includes("uc?export=download")) {
+      const match = d.pdfUrl.match(/id=([^&]+)/);
+      if (match) {
+      pdfFrame.src = `https://drive.google.com/file/d/${match[1]}/preview`;
+      } else {
+      pdfFrame.src = d.pdfUrl;
+      }
+      } else {
+      pdfFrame.src = d.pdfUrl;
+      }
+
+      // setup storage key per user+test
+      const uid = (auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : 'anon';
+      STORAGE_PREFIX = `exam_v4_${testId}_${uid}_answers`;
+
+      // load saved answers (if any)
+      const saved = localStorage.getItem(STORAGE_PREFIX);
+      answers = saved ? JSON.parse(saved) : {};
+
+      // build answer sheet
+      buildAnswerSheet(d.numQuestions);
+
+      // start timer
+      startTimer(d.duration || 120);
+
+      updateProgress();
+    } catch(err){
+      alert('Failed to start test: ' + err.message);
+      console.error(err);
+    }
+  }
+
+  btnBack.addEventListener('click', ()=> {
+    if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    examArea.style.display = 'none';
+    listArea.style.display = 'block';
+    document.getElementById("mainHeader").style.display = "none";
+  });
+
+  // Build answer sheet dynamically
+  function buildAnswerSheet(n){
+    answerArea.innerHTML = '';
     for(let i=1;i<=n;i++){
-      const row=document.createElement('div');
-      row.className='qrow';
-      row.innerHTML=`<div class="qnum">${i}</div>
-        <div class="opt-group">${['A','B','C','D','E'].map(ch=>`<div class="opt" data-q="${i}" data-val="${ch}">${ch}</div>`).join('')}</div>`;
+      const row = document.createElement('div');
+      row.className = 'qrow';
+      row.innerHTML = `<div class="qnum">${i}</div>
+        <div class="opt-group">
+          ${['A','B','C','D','E'].map(ch=>`<div class="opt" data-q="${i}" data-val="${ch}">${ch}</div>`).join('')}
+        </div>`;
       answerArea.appendChild(row);
     }
-    document.querySelectorAll('.opt').forEach(o=>{
-      o.onclick=()=>{const q=o.dataset.q;
-        document.querySelectorAll(\`.opt[data-q="\${q}"]\`).forEach(x=>x.classList.remove('selected'));
-        o.classList.add('selected');answers['q'+q]=o.dataset.val;updateProgress();
-      };
+
+    // restore selections
+    Array.from(answerArea.querySelectorAll('.opt')).forEach(o=>{
+      const q = o.dataset.q;
+      if(answers['q'+q] && answers['q'+q] === o.dataset.val) o.classList.add('selected');
+      o.addEventListener('click', ()=> {
+        const qn = o.dataset.q;
+        Array.from(document.querySelectorAll(`.opt[data-q="${qn}"]`)).forEach(x=>x.classList.remove('selected'));
+        o.classList.add('selected');
+        answers['q' + qn] = o.dataset.val;
+        localStorage.setItem(STORAGE_PREFIX, JSON.stringify(answers));
+        updateProgress();
+      });
     });
   }
 
   function updateProgress(){
-    const total=currentTest.numQuestions,answered=Object.keys(answers).length;
-    progressInfo.textContent=\`\${answered}/\${total} answered\`;
-    btnSubmit.disabled=answered<total;
+    const total = currentTest ? currentTest.numQuestions : 0;
+    const answered = Object.keys(answers).length;
+    progressInfo.textContent = `${answered} / ${total} answered`;
+    // enable submit only if fully answered
+    btnSubmit.disabled = answered < total;
+    btnSubmit.style.opacity = answered < total ? '0.6' : '1';
   }
 
-  function startTimer(min){
-    if(timerInterval)clearInterval(timerInterval);
-    const end=Date.now()+min*60000;
-    timerInterval=setInterval(()=>{
-      const left=end-Date.now();
-      if(left<=0){clearInterval(timerInterval);countdownEl.textContent='00:00';btnSubmit.disabled=true;alert('Time up!');}
-      else{const m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
-        countdownEl.textContent=\`\${String(m).padStart(2,'0')}:\${String(s).padStart(2,'0')}\`;}
-    },500);
+  btnClear.addEventListener('click', ()=> {
+    if(!confirm('Reset all selected answers?')) return;
+    answers = {};
+    localStorage.removeItem(STORAGE_PREFIX);
+    // clear UI
+    Array.from(answerArea.querySelectorAll('.opt')).forEach(x=>x.classList.remove('selected'));
+    updateProgress();
+  });
+
+  // Timer - countdown in mm:ss
+  function startTimer(minutes){
+    if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    const end = Date.now() + minutes*60*1000;
+    timerInterval = setInterval(()=> {
+      const left = end - Date.now();
+      if(left <= 0){
+        clearInterval(timerInterval);
+        countdownEl.textContent = '00:00';
+        // optional: auto-submit? currently we alert and disable submit
+        alert('Time is up. You can no longer submit.');
+        btnSubmit.disabled = true;
+        return;
+      }
+      const mm = Math.floor(left/60000);
+      const ss = Math.floor((left%60000)/1000);
+      countdownEl.textContent = `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    }, 500);
   }
+
+  // CSV parser
+  function parseCSV(txt){
+    const rows = txt.split(/\r?\n/).map(r=>r.trim()).filter(Boolean);
+    const out = {};
+    rows.forEach(r=>{
+      const p = r.split(',');
+      if(p.length>=2){
+        const no = Number(p[0].trim());
+        const ans = p[1].trim().toUpperCase();
+        if(!isNaN(no)) out[no] = ans;
+      }
+    });
+    return out;
+  }
+
+  // Submit: validate all answered, fetch key, calc score, write to Firestore
+  btnSubmit.addEventListener('click', async ()=>{
+    if(!currentTest) return alert('No test loaded');
+    const total = currentTest.numQuestions;
+    if(Object.keys(answers).length < total){
+      return alert('⚠️ You haven\'t answered all questions. Please complete the answer sheet before submitting.');
+    }
+    if(!auth.currentUser){
+      return alert('Please login before submitting.');
+    }
+
+    try {
+      // fetch key CSV
+      const res = await fetch(currentTest.keyUrl, {cache:'no-store'});
+      if(!res.ok) throw new Error('Unable to fetch answer key (CORS or link issue)');
+      const csv = await res.text();
+      const key = parseCSV(csv);
+
+      // scoring: +4 correct, -1 wrong
+      let rawScore = 0;
+      let correct = 0, wrong = 0;
+      for(let i=1;i<=total;i++){
+        const uans = (answers['q'+i] || '').toUpperCase();
+        const kans = (key[i] || '').toUpperCase();
+        if(!uans){ /* shouldn't happen due to validation */ }
+        else if(kans && uans === kans){ rawScore += 4; correct++; }
+        else { rawScore -= 1; wrong++; }
+      }
+
+      const maxPossible = total * 4;
+      const percent = (rawScore / maxPossible) * 100;
+      const percentFixed = Math.round(percent * 100) / 100;
+
+      // Save to Firestore
+      const payload = {
+        testId: currentTest.id,
+        userId: auth.currentUser.uid,
+        userEmail: auth.currentUser.email || null,
+        answers: answers,
+        rawScore,
+        correct,
+        wrong,
+        percent: percentFixed,
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('results').add(payload);
+
+      // show result modal
+      showResult({rawScore, correct, wrong, percent: percentFixed});
+
+      // clear local answers for this test user
+      localStorage.removeItem(STORAGE_PREFIX);
+    } catch(err){
+      alert('Submit failed: ' + err.message);
+      console.error(err);
+    }
+  });
+
+  function showResult({rawScore, correct, wrong, percent}){
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <h3 style="margin-top:0">Result</h3>
+      <div style="margin-top:8px">
+        <div><strong>Score:</strong> ${rawScore} (max ${currentTest.numQuestions*4})</div>
+        <div style="margin-top:6px"><strong>Percent:</strong> ${percent}%</div>
+        <div style="margin-top:6px"><strong>Correct:</strong> ${correct} &nbsp;&nbsp; <strong>Wrong:</strong> ${wrong}</div>
+      </div>
+      <div style="text-align:right;margin-top:12px">
+        <button id="closeModal" class="btn">Close</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('closeModal').addEventListener('click', ()=> document.body.removeChild(modal));
+  }
+
+  // initial load if logged-in: list tests
+  // ensure we try to load tests only after auth is initialized; small delay fallback
+  setTimeout(()=> { if(auth.currentUser) loadTests(); else testsList.innerHTML = '<div class="small">Please login to see tests.</div>'; }, 400);
+
   </script>
 </body>
 </html>
