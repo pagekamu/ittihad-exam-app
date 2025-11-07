@@ -6,120 +6,131 @@
   <title>Student — Ittihadul Exam</title>
   <link rel="icon" href="https://i.imgur.com/3HOXdjB.png" />
   <style>
-    :root{
-      --green-main:#3b8358;
-      --green-dark:#2f704d;
-      --bg:#e8f3ea;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --text:#223;
+    :root {
+      --green-main: #3b8358;
+      --green-dark: #2f704d;
+      --bg: #e8f3ea;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --text: #223;
     }
-    *{box-sizing:border-box;font-family:Inter,system-ui,Arial,sans-serif}
-    body{margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;display:flex;justify-content:center}
-    .wrap{width:100%;max-width:920px;padding:18px}
-    .device{max-width:720px;margin:0 auto}
-    .header{display:flex;gap:12px;align-items:center;background:var(--green-main);color:#fff;padding:12px 16px;border-radius:12px;}
-    .header img{width:52px;height:52px;border-radius:8px;background:#fff;padding:6px}
-    .title{font-weight:700;font-size:16px;line-height:1}
-    .subtitle{font-weight:400;font-size:12px;opacity:.95}
-    .top-right{margin-left:auto;text-align:right;color:rgba(255,255,255,.95);font-size:12px}
-    .card{background:var(--card);padding:14px;border-radius:12px;margin-top:12px;box-shadow:0 6px 18px rgba(11,22,11,0.04)}
-    .small{font-size:13px;color:var(--muted)}
-    .pdf-frame{width:100%;height:300px;border-radius:8px;border:1px solid #e6efe8;overflow:hidden;position:sticky;top:0;z-index:5;background:white}
-    iframe.pdf{width:100%;height:100%;border:0}
-    .answersheet-container{overflow-y:auto;max-height:calc(100vh - 340px);padding:10px;}
-    .answersheet{display:flex;flex-direction:column;gap:10px;}
-    .qrow{display:flex;align-items:center;gap:12px;padding:8px;border-radius:10px;background:#fbfff9}
-    .qnum{min-width:46px;min-height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;background:#dff3e3;color:var(--green-dark)}
-    .opt-group{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
-    .opt{
-      width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #cfe8d6;
-      cursor:pointer;background:#fff;font-weight:700;color:var(--text);transition:all .12s ease;
+
+    * { box-sizing: border-box; font-family: "Inter", system-ui, sans-serif; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
     }
-    .opt.selected{background:var(--green-main);color:#fff;border-color:var(--green-main);transform:scale(1.04);box-shadow:0 4px 12px rgba(11,22,11,0.08)}
-    .controls{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap}
-    .timer{font-weight:700;color:var(--green-dark)}
-    .btn{background:var(--green-main);color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700}
-    .btn.secondary{background:#eef7ef;color:var(--green-dark);border:1px solid #d8eedb}
-    .notice{font-size:13px;color:var(--muted);margin-top:8px;text-align:center}
-    .modal{position:fixed;left:10px;right:10px;top:20%;max-width:540px;margin:0 auto;background:white;border-radius:12px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,0.12);z-index:9999;}
+
+    .wrap { width: 100%; max-width: 920px; padding: 18px; }
+    .header {
+      display: flex; gap: 12px; align-items: center;
+      background: var(--green-main); color: #fff;
+      padding: 12px 16px; border-radius: 12px;
+    }
+
+    .header img { width: 52px; height: 52px; border-radius: 8px; background: #fff; padding: 6px; }
+    .title { font-weight: 700; font-size: 16px; line-height: 1; }
+    .subtitle { font-weight: 400; font-size: 12px; opacity: .95; }
+    .card { background: var(--card); padding: 14px; border-radius: 12px; margin-top: 12px; box-shadow: 0 6px 18px rgba(11,22,11,0.04); }
+    .small { font-size: 13px; color: var(--muted); }
+
+    .pdf-frame { width: 100%; height: 320px; border-radius: 8px; border: 1px solid #e6efe8; overflow: hidden; position: sticky; top: 0; z-index: 5; background: white; }
+    iframe.pdf { width: 100%; height: 100%; border: 0; }
+
+    .answersheet-container { overflow-y: auto; max-height: calc(100vh - 370px); padding: 10px; }
+    .answersheet { display: flex; flex-direction: column; gap: 10px; }
+    .qrow { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 10px; background: #fbfff9; }
+    .qnum { min-width: 42px; min-height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; background: #dff3e3; color: var(--green-dark); }
+    .opt-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
+    .opt {
+      width: 42px; height: 42px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      border: 2px solid #cfe8d6; background: #fff; color: var(--text);
+      font-weight: 700; cursor: pointer; transition: all .12s ease;
+    }
+    .opt.selected { background: var(--green-main); color: #fff; border-color: var(--green-main); transform: scale(1.05); box-shadow: 0 3px 10px rgba(11,22,11,0.1); }
+
+    .controls { display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+    .timer { font-weight: 700; color: var(--green-dark); }
+    .btn { background: var(--green-main); color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+    .btn.secondary { background: #eef7ef; color: var(--green-dark); border: 1px solid #d8eedb; }
+    .notice { font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center; }
 
     @media (max-width:480px){
-      .pdf-frame{height:240px;}
-      .qnum,.opt{width:36px;height:36px;font-size:13px;}
-      .answersheet-container{max-height:calc(100vh - 280px);}
+      .pdf-frame { height: 260px; }
+      .qnum, .opt { width: 34px; height: 34px; font-size: 13px; }
+      .answersheet-container { max-height: calc(100vh - 310px); }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="device">
-      <!-- HEADER hanya tampil sebelum ujian -->
-      <div class="header" id="mainHeader">
-        <img src="https://i.imgur.com/3HOXdjB.png" alt="logo">
+    <!-- Header (disembunyikan setelah ujian mulai) -->
+    <div class="header" id="mainHeader">
+      <img src="https://i.imgur.com/3HOXdjB.png" alt="logo">
+      <div>
+        <div class="title">SMPIT–SMAIT Ittihadul Muwahidin</div>
+        <div class="subtitle">Online Exam</div>
+      </div>
+    </div>
+
+    <!-- List Tes -->
+    <div class="card" id="listArea">
+      <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div class="title">SMPIT–SMAIT Ittihadul Muwahidin</div>
-          <div class="subtitle">Student</div>
+          <strong>Available Tests</strong>
+          <div class="small">Login to start your exam</div>
         </div>
-        <div class="top-right">
-          <div id="userEmail">Not signed in</div>
-          <div class="small" id="localNotice">Answers saved locally</div>
+        <div><button id="btnAuth" class="btn secondary">Login / Signup</button></div>
+      </div>
+      <div id="testsList" class="small" style="margin-top:12px">Loading available tests…</div>
+    </div>
+
+    <!-- Area ujian -->
+    <div id="examArea" style="display:none;margin-top:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <strong id="testTitle">Test Title</strong>
+          <div class="small" id="testMeta">code • duration • q</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="timer" id="countdown">--:--</div>
+          <button id="btnBack" class="btn secondary">Back</button>
         </div>
       </div>
 
-      <div class="card" id="listArea">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <strong>Available Tests</strong>
-            <div class="small">Login to start</div>
-          </div>
-          <div><button id="btnAuth" class="btn secondary">Login / Signup</button></div>
-        </div>
-        <div id="testsList" class="small" style="margin-top:12px">Loading available tests…</div>
+      <!-- PDF viewer -->
+      <div class="pdf-frame" style="margin-top:8px;">
+        <iframe id="pdfFrame" class="pdf" src="" allow="fullscreen"></iframe>
       </div>
 
-      <!-- exam area -->
-      <div id="examArea" style="display:none;margin-top:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <div>
-            <strong id="testTitle">Test Title</strong>
-            <div class="small" id="testMeta">code • duration • q</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <div class="timer" id="countdown">--:--</div>
-            <button id="btnBack" class="btn secondary">Back</button>
-          </div>
+      <!-- scrollable answer sheet -->
+      <div class="answersheet-container">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><strong>Answer Sheet</strong><div class="small" id="asInfo"></div></div>
+          <div class="small">Click A–E to select</div>
         </div>
 
-        <!-- PDF viewer -->
-        <div class="pdf-frame" style="margin-top:8px;">
-          <iframe id="pdfFrame" class="pdf" src="" allow="fullscreen"></iframe>
-        </div>
+        <div id="answerArea" class="answersheet"></div>
 
-        <!-- scrollable answer sheet -->
-        <div class="answersheet-container">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><strong>Answer Sheet</strong><div class="small" id="asInfo"></div></div>
-            <div class="small">Click A–E to select</div>
-          </div>
-
-          <div id="answerArea" class="answersheet"></div>
-
-          <div class="controls">
-            <div class="small" id="progressInfo">0 / 0 answered</div>
-            <div style="display:flex;gap:8px">
-              <button id="btnClear" class="btn secondary">Reset</button>
-              <button id="btnSubmit" class="btn">Submit</button>
-            </div>
+        <div class="controls">
+          <div class="small" id="progressInfo">0 / 0 answered</div>
+          <div style="display:flex;gap:8px">
+            <button id="btnClear" class="btn secondary">Reset</button>
+            <button id="btnSubmit" class="btn">Submit</button>
           </div>
         </div>
       </div>
-
-      <div class="notice">Complete all answers before submitting.</div>
     </div>
   </div>
 
-  <!-- Firebase + script sama kayak versi kamu -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -150,7 +161,7 @@
   const progressInfo=document.getElementById('progressInfo');
   const mainHeader=document.getElementById('mainHeader');
 
-  let currentTest=null,answers={},timerInterval=null,STORAGE_PREFIX='exam_v4_',currentUser=null;
+  let currentTest=null,answers={},timerInterval=null,currentUser=null;
 
   auth.onAuthStateChanged(u=>{
     currentUser=u;
